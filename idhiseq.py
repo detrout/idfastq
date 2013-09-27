@@ -11,7 +11,6 @@ from pprint import pprint
 import re
 import sys
 
-
 LaneID = namedtuple('LaneID', 'flowcell lane end multiplex')
 
 def main(cmdline=None):
@@ -35,12 +34,15 @@ def parse_fastq(stream):
         md5.update(line)
         if 0 == count % 4:
             fields = delims.split(line)
-            fcid = fields[2]
-            lane = fields[3]
-            end = fields[7]
-            multiplex = fields[10].rstrip()
-            laneid = LaneID(fcid, lane, end, multiplex)
-            reads[laneid] += 1
+            if len(fields) > 10:
+                fcid = fields[2]
+                lane = fields[3]
+                end = fields[7]
+                multiplex = fields[10].rstrip()
+                laneid = LaneID(fcid, lane, end, multiplex)
+                reads[laneid] += 1
+            else:
+                reads[None] += 1
         elif 1 == count % 4:
             length[len(line.rstrip())] += 1
 
@@ -51,7 +53,10 @@ def parse_fastq(stream):
     return fastq
 
 def format_lane_id(lane_id):
-    return '_'.join(lane_id)
+    if lane_id is None:
+        return "None"
+    else:
+        return '_'.join(lane_id)
 
 class FastqDescription:
     def __init__(self):
@@ -77,7 +82,10 @@ class FastqDescription:
         return os.linesep.join(rows)
         
 def make_parser():
-    parser = ArgumentParser()
+    parser = ArgumentParser(
+        '%prog: fastq_file...\n',
+        'Generate a report of what HiSeq projects are in a fastq file',
+    )
     parser.add_argument('filenames', nargs='*')
     parser.add_argument('--turtle', default=False, action='store_true',
                         help='output description as turtle')
