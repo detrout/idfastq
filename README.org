@@ -11,12 +11,14 @@ I compute the md5sum of the contents of the file, and I count the
 number of times I see a "lane". and for each fastq file output a block
 like:
 
+#+BEGIN_EXAMPLE
 01b71b35a4e9327f1f0615a73f5295c1 encode3-pipeline-comparison/hg19/20130920/GM12878_Long_Total_SMARTseq_2x100_ENCLB043ZZZ_Wold.fastqRd2.gz
   None: 1
   C1JE0ACXX_1_2_TAAGGCG: 23556929
   C1JE0ACXX_2_2_TAAGGCG: 28751016
   C2812ACXX_2_2_TAAGGCG: 21575822
   C2812ACXX_3_2_TAAGGCG: 21851577
+#+END_EXAMPLE
 
 That fastq contains the second end reads for 2 lanes on 2 flowcells.
 
@@ -31,18 +33,19 @@ For example:
 Before the space is the official "read id", after the space is some
 additional metadata. It should be:
 
-Machine ID:
-Not sure.
-Flowcell ID
-Lane ID
-Tile
-X (or Y)
-Y (or X)
-(space)
-Read number (for paired end)
-Did this read pass the quality filter.
-Not sure.
-Sequence Multiplex barcode.
+| Field | Description                            |
+|     0 | Machine ID                             |
+|     1 | Not sure.                              |
+|     2 | Flowcell ID                            |
+|     3 | Lane ID                                |
+|     4 | Tile                                   |
+|     5 | X (or Y)                               |
+|     6 | Y (or X)                               |
+|     7 | Read number (for paired end)           |
+|     8 | Did this read pass the quality filter. |
+|     9 | Not sure.                              |
+|    10 | Sequence Multiplex barcode.            |
+|       |                                        |
 
 To reasonably uniquely identify a sample I decided to use a tuple of
 consisting of:
@@ -53,9 +56,11 @@ Including the sequence multiplex means there can be a bunch of low
 count records as the multiplex barcode can have errors. For example
 the program might output a block like:
 
+#+BEGIN_EXAMPLE
    C24LTACXX_2_1_TGGGCATG: 5081
    C24LTACXX_2_1_TNGGCATG: 459
    C24LTACXX_2_1_TTGGCATG: 3316
+#+END_EXAMPLE
 
 Mostly I just ignored those low results.
 
