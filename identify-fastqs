@@ -2,16 +2,17 @@
 """Attempt to describe a fastq file generated on a highseq
 """
 from __future__ import print_function
-from argparse import ArgumentParser
+import argparse
 from collections import namedtuple, Counter
-from htsworkflow.util.opener import autoopen
+from autoopen import autoopen
 import hashlib
 import os
 from pprint import pprint
 import re
 import sys
 
-from .fastq_summary import FastqSummary
+from idfastq.fastq_summary import FastqSummary
+
 
 def main(cmdline=None):
     parser = make_parser()
@@ -27,16 +28,23 @@ def main(cmdline=None):
 
 
 def make_parser():
-    parser = ArgumentParser(
-        '%prog: fastq_file...\n',
-        'Generate a report of what HiSeq projects are in a fastq file',
+    parser = argparse.ArgumentParser(
+        usage='%(prog)s fastq_file...',
+        formatter_class=argparse.RawDescriptionHelpFormatter,
+        description="""
+Generate a report of what HiSeq projects are in a fastq file.
+The default report is:
+
+    md5sum_of_contents filename
+      lane_id: count of reads
+    """,
     )
     parser.add_argument('filenames', nargs='*')
-    parser.add_argument('--turtle', default=False, action='store_true',
-                        help='output description as turtle')
+    #parser.add_argument('--turtle', default=False, action='store_true',
+    #                    help='output description as turtle')
     parser.add_argument('--csv', default=False, action='store_true',
                         help='output description as csv')
     return parser
-    
+
 if __name__ == "__main__":
     main(sys.argv[1:])
